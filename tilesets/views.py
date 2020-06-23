@@ -6,6 +6,7 @@ import h5py
 import json
 import logging
 import math
+import requests
 
 import clodius.db_tiles as cdt
 import clodius.hdf_tiles as hdft
@@ -647,6 +648,21 @@ def tileset_info(request):
             #print('tsinfo:', tsinfo)
             if 'chromsizes' in tsinfo:
                 tsinfo['chromsizes'] = [(c, int(s)) for c,s in tsinfo['chromsizes']]
+            if tileset_object.indexfile != None and tileset_object.indexfile.path != None:
+                info_url = tileset_object.indexfile.path
+                if info_url.startswith(hss.MEDIA_ROOT) and info_url[len(hss.MEDIA_ROOT)+1:].startswith("http"):
+                    info_url = info_url[len(hss.MEDIA_ROOT)+1:-2]
+                    if info_url.startswith("https"):
+                        info_url = info_url.replace("https/", "https://")
+                    elif info_url.startswith("http"):
+                        info_url = info_url.replace("http/", "http://")
+
+                    r = requests.get(info_url)
+                    if r.ok:
+                        try:
+                            tsinfo['rowinfo'] = json.dumps(r.json())
+                        except:
+                            tsinfo['rowinfo'] = json.dumps(dict())
             tileset_infos[tileset_uuid] = tsinfo
         elif tileset_object.filetype == 'bigbed':
             chromsizes = tgt.get_chromsizes(tileset_object)
@@ -780,12 +796,10 @@ def register_url(request):
     if not url:
         return JsonResponse({ 'error': 'No url provided in the fileurl field'})
 
-    index_url = None
+    index_url = body.get('indexurl', None)
     filetype = body.get('filetype', None)
-    if filetype == 'bam':
-        index_url = body.get('indexurl', None)
-        if not index_url:
-            return JsonResponse({ 'error': 'bam filetype requires an indexurl field'})
+    if filetype == 'bam' and index_url == None:
+        return JsonResponse({ 'error': 'bam filetype requires an indexurl field'})
 
     """
     # validate the url to ensure we didn't get garbage
