@@ -1,0 +1,19 @@
+version: "2"
+services:
+  web:
+    image: "higlass-server:latest"
+    ports:
+      - 8000:80
+    environment:
+      - REDIS_PASS=${REDIS_PASS}
+      - S3_BUCKET_HGS=${S3_BUCKET_HGS}
+      - AWS_ACCESS_KEY_ID=${S3_BUCKET_HGS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${S3_BUCKET_HGS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${S3_BUCKET_HGS_REGION}
+    links:
+      - redis
+  redis:
+    image: "redis:6-alpine"
+    command: redis-server --requirepass ${REDIS_PASS}
+    environment:
+      - REDIS_REPLICATION_MODE=master
