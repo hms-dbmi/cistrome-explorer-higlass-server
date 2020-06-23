@@ -1,7 +1,6 @@
 ```sh
 # from the root directory of the higlass-server repository:
 
-export REDIS_PASS={some_redis_password}
 export S3_BUCKET_HGS="higlass-server"
 export S3_BUCKET_HGS_ACCESS_KEY_ID={your_aws_access_key_id}
 export S3_BUCKET_HGS_SECRET_ACCESS_KEY={your_aws_secret_access_key}

@@ -1,4 +1,7 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
+
+. /opt/conda/etc/profile.d/conda.sh
+conda activate higlass-server
 
 mkdir -p /data/log
 

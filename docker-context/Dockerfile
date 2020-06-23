@@ -2,8 +2,6 @@ FROM continuumio/miniconda3:4.6.14
 
 ENV PATH /opt/conda/bin:$PATH
 
-COPY docker-context/.bashrc ~/.bashrc
-
 # tini: https://github.com/krallin/tini
 ENV TINI_VERSION v0.18.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
@@ -30,6 +28,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN mkdir -p /software
 RUN curl -L -o /software/goofys https://github.com/kahing/goofys/releases/latest/download/goofys
+RUN chmod +x /software/goofys
 
 RUN mkdir -p /data
 
@@ -52,6 +51,7 @@ COPY docker-context/supervisord.conf ./
 COPY docker-context/uwsgi.ini ./
 
 COPY docker-context/start.sh ./
+RUN chmod +x ./start.sh
 
 EXPOSE 80
 

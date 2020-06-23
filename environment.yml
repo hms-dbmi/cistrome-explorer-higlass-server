@@ -5,11 +5,11 @@ channels:
   - defaults
 dependencies:
   - python>=3.6
-  - cython
+  - cython==0.29.20
   - h5py==2.6.0
-  - pysam
+  - pysam==0.16.0.1
   - htslib=1.3.2
-  - uwsgi
+  - uwsgi==2.0.18
   - pip
   - pip:
     - pybbi==0.2.2
