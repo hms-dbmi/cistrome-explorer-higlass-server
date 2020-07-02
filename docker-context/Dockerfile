@@ -34,7 +34,7 @@ RUN mkdir -p /data
 
 ENV HTTPFS_HTTP_DIR /data/media/http
 ENV HTTPFS_HTTPS_DIR /data/media/https
-ENV GOOFYS_DIR /data/media/goofys
+ENV GOOFYS_DIR /data/media/s3
 
 WORKDIR /higlass-server
 COPY environment.yml ./environment.yml
