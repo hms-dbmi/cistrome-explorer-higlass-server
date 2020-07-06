@@ -32,6 +32,7 @@ import clodius.tiles.cooler as hgco
 import clodius.tiles.bigwig as hgbi
 import clodius.tiles.bigbed as hgbb
 import clodius.tiles.multivec as hgmu
+import clodius.tiles.zarr as hgza
 import clodius.tiles.time_interval as hgti
 import clodius.tiles.geo as hggo
 import clodius.tiles.imtiles as hgim
@@ -677,6 +678,9 @@ def tileset_info(request):
         elif tileset_object.filetype == 'multivec':
             tileset_infos[tileset_uuid] = hgmu.tileset_info(
                     tileset_object.datafile.path)
+        elif tileset_object.filetype == 'zarr':
+            tileset_infos[tileset_uuid] = hgza.tileset_info(
+                tileset_object.datafile.path)
         elif tileset_object.filetype == "elastic_search":
             response = urllib.urlopen(
                 tileset_object.datafile + "/tileset_info")
