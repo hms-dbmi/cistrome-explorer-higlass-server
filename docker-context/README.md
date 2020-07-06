@@ -18,7 +18,9 @@ docker tag higlass-server mkeller7/cistrome-explorer-higlass-server
 ### Run with docker-compose locally
 
 ```sh
-docker-compose -f docker-context/dev.docker-compose.yml up
+export HGS_HOST_PORT=9000 # or =80 for production
+
+docker-compose -f docker-context/docker-compose.yml up
 ```
 
 ### Push the container image to Docker Hub
@@ -36,6 +38,8 @@ Install the [ECS CLI](https://docs.aws.amazon.com/AmazonECS/latest/developerguid
 
 
 ### Create an ECS cluster
+
+
 
 
 Resources

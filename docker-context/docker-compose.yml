@@ -4,7 +4,7 @@ services:
     # TODO: move the repository under the `gehlenborglab` organization on Docker Hub.
     image: mkeller7/cistrome-explorer-higlass-server:latest
     ports:
-      - 80:80
+      - "${HGS_HOST_PORT}:80"
     environment:
       - REDIS_HOST="redis"
       - REDIS_PORT=6379
