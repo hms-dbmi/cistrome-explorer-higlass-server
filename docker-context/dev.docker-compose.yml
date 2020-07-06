@@ -1,7 +1,7 @@
 version: "2"
 services:
   higlass-server:
-    image: higlass-server-dev:latest
+    image: mkeller7/cistrome-explorer-higlass-server:latest
     ports:
       - 8000:80
     environment:
