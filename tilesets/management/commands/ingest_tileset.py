@@ -62,7 +62,7 @@ def ingest(filename=None, datatype=None, filetype=None, coordSystem='', coordSys
 
     if no_upload and filename.startswith('s3/') and filename.endswith('.multires.mv5'):
         # If this is a file on S3, use part of the filename as the uid
-        uid = filename[len('s3/'):-len('.multivec.mv5')]
+        uid = filename[len('s3/'):-len('.multivec.mv5')].replace('/', '__')
 
     # it's a regular file on the filesystem, not a file being entered as a url
     if no_upload:
