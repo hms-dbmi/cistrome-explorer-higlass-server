@@ -132,13 +132,13 @@ def generate_1d_tiles(filename, tile_ids, get_data_function, tileset_options):
     '''
 
     agg_func_map = {
-        "sum": lambda x: np.sum(x, axis=0),
-        "mean": lambda x: np.mean(x, axis=0),
-        "median": lambda x: np.median(x, axis=0),
-        "std": lambda x: np.std(x, axis=0),
-        "var": lambda x: np.var(x, axis=0),
-        "max": lambda x: np.amax(x, axis=0),
-        "min": lambda x: np.amin(x, axis=0),
+        "sum": lambda x: np.nansum(x, axis=0),
+        "mean": lambda x: np.nanmean(x, axis=0),
+        "median": lambda x: np.nanmedian(x, axis=0),
+        "std": lambda x: np.nanstd(x, axis=0),
+        "var": lambda x: np.nanvar(x, axis=0),
+        "max": lambda x: np.nanmax(x, axis=0),
+        "min": lambda x: np.nanmin(x, axis=0),
     }
 
     generated_tiles = []
