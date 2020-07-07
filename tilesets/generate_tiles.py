@@ -11,6 +11,8 @@ import clodius.tiles.bigbed as hgbb
 import clodius.tiles.cooler as hgco
 import clodius.tiles.geo as hggo
 import clodius.tiles.imtiles as hgim
+import clodius.tiles.multivec as ctmu
+import clodius.tiles.zarr as ctza
 
 import h5py
 import itertools as it
@@ -23,8 +25,6 @@ import tilesets.models as tm
 import tilesets.chromsizes  as tcs
 
 import higlass.tilesets as hgti
-
-import clodius.tiles.multivec as ctmu
 
 import higlass_server.settings as hss
 
@@ -537,6 +537,12 @@ def generate_tiles(tileset_tile_ids):
                 tileset.datafile.path,
                 tile_ids,
                 ctmu.get_single_tile,
+                tileset_options)
+    elif tileset.filetype == 'zarr':
+        return generate_1d_tiles(
+                tileset.datafile.path,
+                tile_ids,
+                ctza.get_single_tile,
                 tileset_options)
     elif tileset.filetype == 'imtiles':
         return hgim.get_tiles(tileset.datafile.path, tile_ids, raw)

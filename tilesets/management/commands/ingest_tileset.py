@@ -24,6 +24,9 @@ def remote_to_local(filename, no_upload):
     if filename[:6] == 'ftp://':
         filename = "{}..".format(filename.replace('ftp:/', 'ftp'))
         no_upload=True
+    if filename[:5] == 's3://':
+        filename = filename.replace('s3:/', 's3')
+        no_upload=True
 
     return (filename, no_upload)
 
@@ -57,18 +60,32 @@ def ingest(filename=None, datatype=None, filetype=None, coordSystem='', coordSys
     if indexfile:
         indexfile, _ = remote_to_local(indexfile, no_upload)
 
+    if no_upload and filename.startswith('s3/') and filename.endswith('.multires.mv5'):
+        # If this is a file on S3, use part of the filename as the uid
+        uid = filename[len('s3/'):-len('.multivec.mv5')]
+
     # it's a regular file on the filesystem, not a file being entered as a url
     if no_upload:
         if (not op.isfile(op.join(settings.MEDIA_ROOT, filename)) and
             not op.islink(op.join(settings.MEDIA_ROOT, filename)) and
-            not any([filename.startswith('http/'), filename.startswith('https/'), filename.startswith('ftp/')])):
+            not any([
+                filename.startswith('http/'),
+                filename.startswith('https/'),
+                filename.startswith('ftp/'),
+                filename.startswith('s3/')
+            ])):
             raise CommandError('File does not exist under media root')
         filename = op.join(settings.MEDIA_ROOT, filename)
         django_file = filename
         if indexfile:
             if (not op.isfile(op.join(settings.MEDIA_ROOT, indexfile)) and
                 not op.islink(op.join(settings.MEDIA_ROOT, indexfile)) and
-                not any([indexfile.startswith('http/'), indexfile.startswith('https/'), indexfile.startswith('ftp/')])):
+                not any([
+                    indexfile.startswith('http/'),
+                    indexfile.startswith('https/'),
+                    indexfile.startswith('ftp/'),
+                    indexfile.startswith('s3/')
+                ])):
                 raise CommandError('Index file does not exist under media root')
             indexfile = op.join(settings.MEDIA_ROOT, indexfile)
     else:
@@ -96,18 +113,21 @@ def ingest(filename=None, datatype=None, filetype=None, coordSystem='', coordSys
             name=project_name
         )
 
-    return tm.Tileset.objects.create(
-        datafile=django_file,
-        indexfile=indexfile,
-        filetype=filetype,
-        datatype=datatype,
-        coordSystem=coordSystem,
-        coordSystem2=coordSystem2,
-        owner=None,
-        project=project_obj,
-        uuid=uid,
-        temporary=temporary,
-        name=name)
+    try:
+        return tm.Tileset.objects.get(uuid=uid)
+    except dce.ObjectDoesNotExist:
+        return tm.Tileset.objects.create(
+            datafile=django_file,
+            indexfile=indexfile,
+            filetype=filetype,
+            datatype=datatype,
+            coordSystem=coordSystem,
+            coordSystem2=coordSystem2,
+            owner=None,
+            project=project_obj,
+            uuid=uid,
+            temporary=temporary,
+            name=name)
 
 def chromsizes_match(chromsizes1, chromsizes2):
     pass

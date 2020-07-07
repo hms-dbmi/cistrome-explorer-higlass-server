@@ -1,5 +1,13 @@
 FROM continuumio/miniconda3:4.6.14
 
+ENV PATH /opt/conda/bin:$PATH
+
+# tini: https://github.com/krallin/tini
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+
 RUN apt-get update && apt-get install -y \
         gcc \
         nginx-full \
@@ -18,21 +26,19 @@ RUN apt-get update && apt-get install -y \
         fuse \
     && rm -rf /var/lib/apt/lists/*
 
-RUN conda install --yes cython numpy==1.14.0
-RUN conda install --yes --channel bioconda pysam htslib=1.3.2
-RUN conda install --yes -c conda-forge uwsgi
+RUN mkdir -p /software
+RUN curl -L -o /software/goofys https://github.com/kahing/goofys/releases/latest/download/goofys
+RUN chmod +x /software/goofys
 
-RUN pip install simple-httpfs>=0.1.3
+RUN mkdir -p /data
 
 ENV HTTPFS_HTTP_DIR /data/media/http
 ENV HTTPFS_HTTPS_DIR /data/media/https
-ENV HTTPFS_FTP_DIR /data/media/ftp
+ENV GOOFYS_DIR /data/media/s3
 
 WORKDIR /higlass-server
-COPY requirements.txt ./
-COPY requirements-dev.txt ./
-RUN pip install -r requirements.txt
-RUN pip install -r requirements-dev.txt
+COPY environment.yml ./environment.yml
+RUN conda env create -f ./environment.yml
 
 COPY docker-context/nginx.conf /etc/nginx/
 COPY docker-context/hgserver_nginx.conf /etc/nginx/sites-enabled/
@@ -44,7 +50,8 @@ COPY docker-context/default-viewconf-fixture.xml ./
 COPY docker-context/supervisord.conf ./
 COPY docker-context/uwsgi.ini ./
 
-COPY docker-context/httpfs.sh ./
+COPY docker-context/start.sh ./
+RUN chmod +x ./start.sh
 
 EXPOSE 80
 
