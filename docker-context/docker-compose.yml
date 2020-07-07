@@ -12,8 +12,6 @@ services:
       - AWS_ACCESS_KEY_ID=${S3_BUCKET_HGS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${S3_BUCKET_HGS_SECRET_ACCESS_KEY}
       - AWS_DEFAULT_REGION=${S3_BUCKET_HGS_REGION}
-    security_opt:
-      - apparmor:unconfined
     devices:
       - "/dev/fuse"
     cap_add:
