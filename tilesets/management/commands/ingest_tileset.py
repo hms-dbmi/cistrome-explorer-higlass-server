@@ -60,6 +60,10 @@ def ingest(filename=None, datatype=None, filetype=None, coordSystem='', coordSys
     if indexfile:
         indexfile, _ = remote_to_local(indexfile, no_upload)
 
+    if no_upload and filename.startswith('s3/') and filename.endswith('.multires.mv5'):
+        # If this is a file on S3, use part of the filename as the uid
+        uid = filename[len('s3/'):-len('.multivec.mv5')]
+
     # it's a regular file on the filesystem, not a file being entered as a url
     if no_upload:
         if (not op.isfile(op.join(settings.MEDIA_ROOT, filename)) and
@@ -108,18 +112,22 @@ def ingest(filename=None, datatype=None, filetype=None, coordSystem='', coordSys
         project_obj = tm.Project.objects.create(
             name=project_name
         )
-    return tm.Tileset.objects.create(
-        datafile=django_file,
-        indexfile=indexfile,
-        filetype=filetype,
-        datatype=datatype,
-        coordSystem=coordSystem,
-        coordSystem2=coordSystem2,
-        owner=None,
-        project=project_obj,
-        uuid=uid,
-        temporary=temporary,
-        name=name)
+
+    try:
+        return tm.Tileset.objects.get(uuid=uid)
+    except dce.ObjectDoesNotExist:
+        return tm.Tileset.objects.create(
+            datafile=django_file,
+            indexfile=indexfile,
+            filetype=filetype,
+            datatype=datatype,
+            coordSystem=coordSystem,
+            coordSystem2=coordSystem2,
+            owner=None,
+            project=project_obj,
+            uuid=uid,
+            temporary=temporary,
+            name=name)
 
 def chromsizes_match(chromsizes1, chromsizes2):
     pass
